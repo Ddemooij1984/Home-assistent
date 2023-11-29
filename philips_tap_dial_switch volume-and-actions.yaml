@@ -13,13 +13,33 @@ blueprint:
           manufacturer: Signify Netherlands B.V.
           model: RDM002
           multiple: false
+    turnwheel_left_slow:
+      name: turnwheel left slow
+      description: To be controlled with the dial
+      selector:
+        action: {}
     turnwheel_left:
       name: turnwheel left
       description: To be controlled with the dial
       selector:
         action: {}
+    turnwheel_left_fast:
+      name: turnwheel left fast
+      description: To be controlled with the dial
+      selector:
+        action: {}
+    turnwheel_right_slow:
+      name: turnwheel right slow
+      description: To be controlled with the dial
+      selector:
+        action: {}
     turnwheel_right:
       name: turnwheel right
+      description: To be controlled with the dial
+      selector:
+        action: {}
+    turnwheel_right_fast:
+      name: turnwheel right fast
       description: To be controlled with the dial
       selector:
         action: {}
@@ -60,16 +80,39 @@ trigger:
   event_data:
     device_id: !input remote
 action:
-
 - choose:
   - conditions:
     - '{{ event == "step_with_on_off" }}'
     - '{{ step_mode == "StepMode.Up" }}'
+    - '{{ step_size < 50  }}'
+    sequence: !input turnwheel_right_slow
+  - conditions:
+    - '{{ event == "step_with_on_off" }}'
+    - '{{ step_mode == "StepMode.Up" }}'
+    - "{{ step_size <= 100 }}"
+    - "{{ step_size >= 50  }}"
     sequence: !input turnwheel_right
   - conditions:
     - '{{ event == "step_with_on_off" }}'
+    - '{{ step_mode == "StepMode.Up" }}'
+    - "{{ step_size > 100  }}"
+    sequence: !input turnwheel_right_fast
+  - conditions:
+    - '{{ event == "step_with_on_off" }}'
     - '{{ step_mode == "StepMode.Down" }}'
+    - "{{ step_size < 50  }}"
+    sequence: !input turnwheel_left_slow
+  - conditions:
+    - '{{ event == "step_with_on_off" }}'
+    - '{{ step_mode == "StepMode.Down" }}'
+    - '{{ step_size <= 100 }}'
+    - '{{ step_size >= 50  }}'
     sequence: !input turnwheel_left
+  - conditions:
+    - '{{ event == "step_with_on_off" }}'
+    - '{{ step_mode == "StepMode.Down" }}'
+    - '{{ step_size > 100  }}'
+    sequence: !input turnwheel_left_fast
   - conditions:
     - '{{ event == "recall" }}'
     - '{{ scene == 1 }}'
